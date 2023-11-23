@@ -1,23 +1,27 @@
 from rest_framework import serializers
-from main.models import Article
+from main.models import Article, Comment, Category, Tag, User
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'name']
 
-class ArticleSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    title = serializers.CharField(required=False, allow_blank=True, max_length=100)
-    text = serializers.CharField(style={'base_template': 'textarea.html'})
+class ArticleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = ['id', 'title', 'text', 'created_at']
 
-    def create(self, validated_data):
-        """
-        Create and return a new `Article` instance, given the validated data.
-        """
-        return Article.objects.created_at(**validated_data)
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ['id', 'author', 'text', 'created_at']
 
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Article` instance, given the validated data.
-        """
-        instance.title = validated_data.get('title', instance.title)
-        instance.text = validated_data.get('text', instance.text)
-        instance.save()
-        return instance
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name']
+
+class TagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ['id', 'name']

@@ -1,51 +1,26 @@
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
-from main.models import Article
-from main.serializers import ArticleSerializer
+from .serializers import ArticleSerializer, CommentSerializer, CategorySerializer, TagSerializer
+from .models import Article, Comment, Category, Tag
 
 # Create your views here.
 @csrf_exempt
 
-def article_list(request):
-    """
-    List all code snippets, or create a new snippet.
-    """
+def article(request):
     if request.method == 'GET':
-        main = Snippet.objects.all()
-        serializer = ArticleSerializer(main, many=True)
-        return JsonResponse(serializer.data, safe=False)
+        category = Category.objects.get(id=id)
+        category_s = CategorySerializer()
+        articles = Article.objects.all()
+        article_s = ArticleSerializer(many=True)
+        return JsonResponse(article_s.data, safe=False)
 
-    elif request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = ArticleSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-
-def article_detail(request, pk):
-    """
-    Retrieve, update or delete a code article.
-    """
-    try:
-        article = Article.objects.get(pk=pk)
-    except Article.DoesNotExist:
-        return HttpResponse(status=404)
-
+def article_detail(request, id):
     if request.method == 'GET':
-        serializer = ArticleSerializer(article)
-        return JsonResponse(serializer.data)
-
-    elif request.method == 'PUT':
-        data = JSONParser().parse(request)
-        serializer = ArticleSerializer(article, data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-
-    elif request.method == 'DELETE':
-        article.delete()
-        return HttpResponse(status=204)
+        articles = Article.objects.get(pk=id)
+        article_s = ArticleSerializer(many=True)
+        comments = Comments.objects.filter(id=article)
+        comments_s = CommentsSerializer(many=True)
+        category = Category.objects.get(id=id)
+        category_s = CategorySerializer()
+        return JsonResponse(article_s.data, comments_s.data, category_s.data, tag_s.data,  safe=False)
