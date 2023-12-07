@@ -9,6 +9,7 @@ class Article(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now=True)
     category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True)
+    published = models.BooleanField(default=False)
 
 class Comment(models.Model):
     user = models.ForeignKey('User', on_delete=models.SET_NULL, null=True, blank=True)
