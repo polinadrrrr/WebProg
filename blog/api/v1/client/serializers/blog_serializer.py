@@ -1,9 +1,7 @@
 from rest_framework import serializers
 from main.models import User, Article, Comment, Category
 
-
 class UserSerializer(serializers.ModelSerializer):
-    """User serializer class"""
     class Meta:
         model = User
         fields = [
@@ -11,8 +9,21 @@ class UserSerializer(serializers.ModelSerializer):
             'name'
         ]
 
+
+class ArticleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Article
+        fields = [
+            'id', 
+            'title', 
+            'text', 
+            'created_at',
+            'category',
+            'published',
+        ]
+
+
 class CommentSerializer(serializers.ModelSerializer):
-    """Comment serializer class"""
     class Meta:
         model = Comment
         fields = [
@@ -23,27 +34,17 @@ class CommentSerializer(serializers.ModelSerializer):
             'article'
         ]
 
-class ArticleSerializer(serializers.ModelSerializer):
-    """Article serializer class"""
-    comments = CommentSerializer(many=True, read_only=True)
-    class Meta:
-        model = Article
-        fields = [
-            'id', 
-            'title', 
-            'text', 
-            'created_at',
-            'category',
-            'published',
-            'comments'
-        ]
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Category serializer class"""
+    articles = ArticleSerializer(many=True, source='article_set')
+    article_count = serializers.IntegerField(source='count')
+
     class Meta:
         model = Category
         fields = [
             'id', 
             'name',
-            'description'
+            'description',
+            'article_count',
+            'articles',
         ]
